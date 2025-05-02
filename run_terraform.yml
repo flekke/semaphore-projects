@@ -34,7 +34,7 @@
         version: main
         force: yes
       environment:
-        GIT_TERMINAL_PROMPT: ""
+        GIT_TERMINAL_PROMPT: "0"
 
     - name: Run terraform init
       shell: terraform init
