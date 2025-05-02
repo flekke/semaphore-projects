@@ -12,7 +12,7 @@ provider "openstack" {
 }
 
 resource "openstack_compute_instance_v2" "vm" {
-  count        = 4  # VM 4개 생성
+  count        = 3  # VM 3개 생성
   name         = "vm-${count.index}"  # 이름: vm-0, vm-1, ...
   flavor_name  = "aem.1c2r.50g"  # 원하는 flavor 이름
   key_pair     = "newkey"  # OpenStack에 등록된 SSH 키 이름
