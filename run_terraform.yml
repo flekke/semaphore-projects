@@ -2,8 +2,8 @@
 - name: Prepare and run Terraform
   hosts: localhost
   gather_facts: no
-  tasks:
 
+  tasks:
     - name: Ensure openstack config directory exists
       file:
         path: /home/semaphore/.config/openstack
@@ -33,7 +33,7 @@
         dest: /tmp/tf-project
         version: main
         force: yes
-     environment:
+      environment:
         GIT_TERMINAL_PROMPT: ""
 
     - name: Run terraform init
