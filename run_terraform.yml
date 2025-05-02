@@ -6,14 +6,14 @@
 
     - name: Ensure openstack config directory exists
       file:
-        path: /root/.config/openstack
+        path: /home/semaphore/.config/openstack
         state: directory
         mode: '0755'
         recurse: yes
 
     - name: Create clouds.yaml for OpenStack provider
       copy:
-        dest: /root/.config/openstack/clouds.yaml
+        dest: /home/semaphore/.config/openstack/clouds.yaml
         content: |
           clouds:
             openstack:
@@ -38,8 +38,12 @@
       shell: terraform init
       args:
         chdir: /tmp/tf-project/terraform
+      environment:
+        OS_CLIENT_CONFIG_FILE: /home/semaphore/.config/openstack/clouds.yaml
 
     - name: Run terraform apply
       shell: terraform apply -auto-approve
       args:
         chdir: /tmp/tf-project/terraform
+      environment:
+        OS_CLIENT_CONFIG_FILE: /home/semaphore/.config/openstack/clouds.yaml
