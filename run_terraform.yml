@@ -17,10 +17,8 @@
         chdir: /tmp/tf-project/terraform
 
     - name: Run terraform apply
-      shell: terraform apply -auto-approve
+      ansible.builtin.shell: terraform apply -auto-approve
       args:
         chdir: /tmp/tf-project/terraform
-        executable: /bin/bash
-    # 아래 환경변수 추가!
-        env:
-           OS_CLIENT_CONFIG_FILE: "/home/ubuntu/.config/openstack/clouds.yaml"
+      environment:
+        OS_CLIENT_CONFIG_FILE: "/home/ubuntu/.config/openstack/clouds.yaml"
