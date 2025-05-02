@@ -1,10 +1,33 @@
 ---
-- name: Run Terraform
+- name: Prepare and run Terraform
   hosts: localhost
   gather_facts: no
-
   tasks:
-    - name: Clone Terraform code
+
+    - name: Ensure openstack config directory exists
+      file:
+        path: /root/.config/openstack
+        state: directory
+        mode: '0755'
+        recurse: yes
+
+    - name: Create clouds.yaml for OpenStack provider
+      copy:
+        dest: /root/.config/openstack/clouds.yaml
+        content: |
+          clouds:
+            openstack:
+              auth:
+                auth_url: https://pegasus.sky.oslomet.no:5000
+                username: "yolim4304@oslomet.no"
+                project_id: 0903c452034f4d838edeb54a00c5ee52
+                project_name: "ACIT4430_V25_io2"
+                user_domain_name: "oslomet"
+              region_name: "Pilestredet"
+              interface: "public"
+              identity_api_version: 3
+
+    - name: Clone Terraform code from GitHub
       git:
         repo: https://github.com/flekke/semaphore-projects.git
         dest: /tmp/tf-project
@@ -17,8 +40,6 @@
         chdir: /tmp/tf-project/terraform
 
     - name: Run terraform apply
-      ansible.builtin.shell: terraform apply -auto-approve
+      shell: terraform apply -auto-approve
       args:
         chdir: /tmp/tf-project/terraform
-      environment:
-        OS_CLIENT_CONFIG_FILE: "/home/ubuntu/.config/openstack/clouds.yaml"
