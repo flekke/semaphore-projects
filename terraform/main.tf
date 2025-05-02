@@ -18,13 +18,13 @@ resource "openstack_compute_instance_v2" "vm" {
   key_pair     = "newkey"  # OpenStack에 등록된 SSH 키 이름
 
   block_device {
-    uuid = "44cae3e6-0907-4d6b-8376-2858e234f4d8"
-    source_type           = "image"
-    destination_type      = "volume"
-    volume_size           = 25  # 볼륨 크기 (GB)
-    boot_index            = 0
-    delete_on_termination = true
-  }
+  boot_index            = 0
+  delete_on_termination = true
+  destination_type      = "volume"
+  source_type           = "image"
+  uuid                  = "44cae3e6-0907-4d6b-8376-2858e234f4d8"
+  volume_size           = 25  # ← 이 부분을
+}
 
   network {
     name = "oslomet"
