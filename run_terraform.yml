@@ -1,1 +1,23 @@
+---
+- name: Run Terraform
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Clone Terraform code
+      git:
+        repo: https://github.com/flekke/semaphore-projects.git
+        dest: /tmp/tf-project
+        version: main
+        force: yes
+
+    - name: Run terraform init
+      shell: terraform init
+      args:
+        chdir: /tmp/tf-project/terraform
+
+    - name: Run terraform apply
+      shell: terraform apply -auto-approve
+      args:
+        chdir: /tmp/tf-project/terraform
 
