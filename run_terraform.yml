@@ -33,6 +33,8 @@
         dest: /tmp/tf-project
         version: main
         force: yes
+     environment:
+        GIT_TERMINAL_PROMPT: ""
 
     - name: Run terraform init
       shell: terraform init
