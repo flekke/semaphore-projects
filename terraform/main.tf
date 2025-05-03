@@ -29,5 +29,4 @@ resource "openstack_compute_instance_v2" "vm" {
   network {
     name = "oslomet"
   }
-  image_id = "44cae3e6-0907-4d6b-8376-2858e234f4d8"
 }
