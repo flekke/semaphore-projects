@@ -47,7 +47,7 @@
       set_fact:
         inventory_content: |
           {% set ips = tf_output.stdout | from_json %}
-          {% for name, ip in ips.items() %}
+          {% for name, ip in ips.items() -%}
           {{ ip }} ansible_user=ubuntu{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
           {% endfor %}
     
