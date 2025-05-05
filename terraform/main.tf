@@ -72,9 +72,11 @@ resource "openstack_compute_instance_v2" "vm2" {  # 세 번째 VM
   depends_on = [openstack_compute_instance_v2.vm1]  # vm1 생성 후 실행
 }
 
-output "instance_ips" {
-  value = {
-    for i in range(3) : "node${i + 1}" => openstack_compute_instance_v2.vm[i].network[0].fixed_ip_v4
+  output "instance_ips" {
+    value = {
+      node1 = openstack_compute_instance_v2.vm0.network[0].fixed_ip_v4
+      node2 = openstack_compute_instance_v2.vm1.network[0].fixed_ip_v4
+      node3 = openstack_compute_instance_v2.vm2.network[0].fixed_ip_v4
+    }
   }
-}
 
