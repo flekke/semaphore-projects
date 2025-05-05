@@ -45,22 +45,21 @@
 
     - name: Generate inventory.ini content from Terraform output
       set_fact:
-        inventory_content: >-
+        inventory_content: |
           {% set ips = tf_output.stdout | from_json %}
           {% for name, ip in ips.items() %}
-          {{ ip }} ansible_user=ubuntu ansible_become=true{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
+{{ ip }} ansible_user=ubuntu ansible_become=true{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
           {% endfor %}
 
-          [kube_control_plane]
-          {{ ips['node1'] }}
+[kube_control_plane]
+{{ ips['node1'] }}
 
-          [etcd:children]
-          kube_control_plane
+[etcd:children]
+kube_control_plane
 
-          [kube_node]
-          {{ ips['node2'] }}
-          {{ ips['node3'] }}
-
+[kube_node]
+{{ ips['node2'] }}
+{{ ips['node3'] }}
 
     
     - name: Write inventory.ini to file
