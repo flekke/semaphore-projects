@@ -36,3 +36,30 @@
         chdir: /tmp/tf-project/terraform
       environment:
         OS_CLIENT_CONFIG_FILE: /home/semaphore/.config/openstack/clouds.yaml
+
+  - name: Get instance IPs from Terraform output
+  command: terraform output -json instance_ips
+  register: tf_output
+  args:
+    chdir: /tmp/tf-project/terraform
+
+  - name: Generate Kubespray inventory.ini file
+    copy:
+      dest: /tmp/tf-project/kubespray-inventory.ini
+      content: |
+        {% set ips = tf_output.stdout | from_json %}
+        {% for name, ip in ips.items() %}
+        {{ name }} ansible_host={{ ip }} ansible_user=ubuntu{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
+        {% endfor %}
+  
+        [kube_control_plane]
+        node1
+  
+        [etcd:children]
+        kube_control_plane
+  
+        [kube_node]
+        node2
+        node3
+        node4
+
