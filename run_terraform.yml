@@ -48,19 +48,19 @@
         inventory_content: |
           {% set ips = tf_output.stdout | from_json %}
           {% for name, ip in ips.items() %}
-          {{ name }} ansible_host={{ ip }} ansible_user=ubuntu{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
+          {{ ip }} ansible_user=ubuntu{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
           {% endfor %}
     
           [kube_control_plane]
-          node1
-    
+          {{ ips['node1'] }}
+
           [etcd:children]
           kube_control_plane
-    
+
           [kube_node]
-          node2
-          node3
-          node4
+          {{ ips['node2'] }}
+          {{ ips['node3'] }}
+
     
     - name: Write inventory.ini to file
       copy:
