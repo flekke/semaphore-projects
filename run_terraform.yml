@@ -43,10 +43,9 @@
       args:
         chdir: /tmp/tf-project/terraform
 
-    - name: Generate Kubespray inventory.ini file
-      copy:
-        dest: /tmp/tf-project/kubespray-inventory.ini
-        content: |
+    - name: Generate inventory.ini content from Terraform output
+      set_fact:
+        inventory_content: |
           {% set ips = tf_output.stdout | from_json %}
           {% for name, ip in ips.items() %}
           {{ name }} ansible_host={{ ip }} ansible_user=ubuntu{% if name == 'node1' %} etcd_member_name=etcd1{% endif %}
@@ -62,4 +61,8 @@
           node2
           node3
           node4
-  
+    
+    - name: Write inventory.ini to file
+      copy:
+        content: "{{ inventory_content }}"
+        dest: /tmp/tf-project/kubespray-inventory.ini
