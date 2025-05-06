@@ -13,7 +13,7 @@ provider "openstack" {
 
 resource "openstack_compute_instance_v2" "vm0" {  # 첫 번째 VM
   name         = "vm-0"  # 이름
-  flavor_name  = "aem.1c2r.50g"  # VM 크기 설정
+  flavor_name  = "aem.2c4r.50g"  # VM 크기 설정
   key_pair     = "newkey"  # 사용할 SSH 키
 
   block_device {
@@ -32,7 +32,7 @@ resource "openstack_compute_instance_v2" "vm0" {  # 첫 번째 VM
 
 resource "openstack_compute_instance_v2" "vm1" {  # 두 번째 VM
   name         = "vm-1"
-  flavor_name  = "aem.1c2r.50g"
+  flavor_name  = "aem.2c4r.50g"
   key_pair     = "newkey"
 
   block_device {
@@ -53,7 +53,7 @@ resource "openstack_compute_instance_v2" "vm1" {  # 두 번째 VM
 
 resource "openstack_compute_instance_v2" "vm2" {  # 세 번째 VM
   name         = "vm-2"
-  flavor_name  = "aem.1c2r.50g"
+  flavor_name  = "aem.2c4r.50g"
   key_pair     = "newkey"
 
   block_device {
