@@ -12,8 +12,6 @@
         mode: '0755'
         recurse: yes
 
-    # clouds.yaml 생성하는 task 제거됨
-
     - name: Clone Terraform code from GitHub
       git:
         repo: https://github.com/flekke/semaphore-projects.git
