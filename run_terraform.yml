@@ -1,55 +1,72 @@
----
-- name: Prepare and run Terraform
-  hosts: localhost
-  connection: local
-  gather_facts: no
+terraform {
+  required_providers {
+    openstack = {
+      source = "terraform-provider-openstack/openstack"
+    }
+  }
+}
 
-  tasks:
-    - name: Ensure openstack config directory exists
-      file:
-        path: /home/semaphore/.config/openstack
-        state: directory
-        mode: '0755'
-        recurse: yes
+provider "openstack" {
+  cloud = "openstack" # ~/.config/openstack/clouds.yaml 기준
+}
 
-    # clouds.yaml 생성하는 task 제거됨
+resource "openstack_compute_instance_v2" "vm0" {  # 첫 번째 VM
+  name         = "vm-0"  # 이름
+  flavor_name  = "aem.1c2r.50g"  # VM 크기 설정
+  key_pair     = "newkey"  # 사용할 SSH 키
 
-    - name: Clone Terraform code from GitHub
-      git:
-        repo: https://github.com/flekke/semaphore-projects.git
-        dest: /tmp/tf-project
-        version: main
-        force: yes
-      environment:
-        GIT_TERMINAL_PROMPT: "0"
+  block_device {
+    boot_index            = 0  # 부팅 순서
+    delete_on_termination = true  # VM 삭제 시 볼륨도 삭제
+    destination_type      = "volume"  # 볼륨 부팅
+    source_type           = "image"  # 이미지로부터 생성
+    uuid                  = "44cae3e6-0907-4d6b-8376-2858e234f4d8"  # 사용할 이미지 UUID
+    volume_size           = 10  # 볼륨 크기 (GB)
+  }
 
-    - name: Run terraform init
-      shell: terraform init
-      args:
-        chdir: /tmp/tf-project/terraform
-      environment:
-        OS_CLIENT_CONFIG_FILE: /home/semaphore/.config/openstack/clouds.yaml
+  network {
+    name = "oslomet"  # 연결할 네트워크 이름
+  }
+}
 
-    - name: Run terraform apply
-      shell: terraform apply -auto-approve
-      args:
-        chdir: /tmp/tf-project/terraform
-      environment:
-        OS_CLIENT_CONFIG_FILE: /home/semaphore/.config/openstack/clouds.yaml
+resource "openstack_compute_instance_v2" "vm1" {  # 두 번째 VM
+  name         = "vm-1"
+  flavor_name  = "aem.1c2r.50g"
+  key_pair     = "newkey"
 
-    - name: Get instance IPs from Terraform output
-      command: terraform output -json instance_ips
-      register: tf_output
-      args:
-        chdir: /tmp/tf-project/terraform
+  block_device {
+    boot_index            = 0
+    delete_on_termination = true
+    destination_type      = "volume"
+    source_type           = "image"
+    uuid                  = "44cae3e6-0907-4d6b-8376-2858e234f4d8"
+    volume_size           = 10
+  }
 
-    - name: Generate inventory.ini from template
-      template:
-        src: /tmp/tf-project/terraform/templates/inventory.ini.j2
-        dest: /tmp/tf-project/kubespray-inventory.ini
+  network {
+    name = "oslomet"
+  }
 
-    
-    - name: Write inventory.ini to file
-      copy:
-        content: "{{ inventory_content }}"
-        dest: /tmp/tf-project/kubespray-inventory.ini
+  depends_on = [openstack_compute_instance_v2.vm0]  # vm0이 먼저 생성된 후 실행
+}
+
+resource "openstack_compute_instance_v2" "vm2" {  # 세 번째 VM
+  name         = "vm-2"
+  flavor_name  = "aem.1c2r.50g"
+  key_pair     = "newkey"
+
+  block_device {
+    boot_index            = 0
+    delete_on_termination = true
+    destination_type      = "volume"
+    source_type           = "image"
+    uuid                  = "44cae3e6-0907-4d6b-8376-2858e234f4d8"
+    volume_size           = 10
+  }
+
+  network {
+    name = "oslomet"
+  }
+
+  depends_on = [openstack_compute_instance_v2.vm1]  # vm1 생성 후 실행
+}
